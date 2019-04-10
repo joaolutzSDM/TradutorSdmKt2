@@ -3,6 +3,19 @@ package br.edu.ifsp.scl.sdm.tradutorsdmkt.model
 data class Resposta(
     var metadata: Metadata? = Metadata(),var results: List<Result?>? = listOf()
 )
+data class LanguagesResponse(
+    var metadata: Metadata? = Metadata(), var results: List<Language?>? = listOf()
+)
+data class Language(
+    var region: String? = "",
+    var source: String? = "",
+    var sourceLanguage: SourceLanguage? = SourceLanguage(),
+    var type: String? = ""
+)
+data class SourceLanguage(
+    var id: String? = "",
+    var language: String? = ""
+)
 data class Result(
     var id: String? = "",
     var language: String? = "",
