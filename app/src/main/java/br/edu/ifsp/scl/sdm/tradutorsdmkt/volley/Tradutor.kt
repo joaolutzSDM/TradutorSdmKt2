@@ -27,7 +27,7 @@ import org.json.JSONObject
 
 class Tradutor(val mainActivity: MainActivity) {
 
-    fun getLanguages(palavraOrigem: String, idiomaOrigem: String, idiomaDestino: String) {
+    fun getLanguages() {
         // Monta uma String com uma URL a partir das constantes e parâmetros do usuário
         val urlSb = StringBuilder(URL_BASE)
         urlSb.append("languages")
@@ -105,7 +105,7 @@ Pode causar problemas de desempenho com respostas muito grandes */
                 var languages: MutableList<String> = mutableListOf()
                 // Parseando o objeto e adicionando as traduções ao StringBuffer, O(N^5)
                 resposta.results?.forEach {
-                    languages.add(it?.sourceLanguage?.language!!)
+                    languages.add(it?.source!!) //Language?.id!!)
                 }
                 // Enviando as tradução ao Handler da thread de UI para serem mostrados na tela
                 mainActivity.tradutoHandler.obtainMessage(

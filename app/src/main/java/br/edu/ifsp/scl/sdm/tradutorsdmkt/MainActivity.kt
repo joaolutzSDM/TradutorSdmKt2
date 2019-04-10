@@ -20,6 +20,9 @@ class MainActivity : AppCompatActivity() {
         // Instancia o handler da thread de UI usado pelo tradutor
         tradutoHandler = TradutoHandler()
 
+        val tradutor: Tradutor = Tradutor(this)
+        tradutor.getLanguages()
+
         // Seta o Listener para o botão
 //        traduzirBt.setOnClickListener {
 //            // Testa se o usuário digitou alguma coisa para traduzir
