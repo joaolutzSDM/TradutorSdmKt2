@@ -1,6 +1,6 @@
 package br.edu.ifsp.scl.sdm.tradutorsdmkt.volley
 
-import android.app.DownloadManager
+
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.APP_ID_FIELD
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.APP_ID_VALUE
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.APP_KEY_FIELD
@@ -8,10 +8,10 @@ import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.APP_KEY_VALUE
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.END_POINT
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.Constantes.URL_BASE
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity
+import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_REGIONS
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_TRADUCAO
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.LanguagesResponse
-import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.Resposta
-import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.Translation
+import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.RegionsResponse
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -57,40 +57,38 @@ class Tradutor(val mainActivity: MainActivity) {
         filaRequisicaoTraducao.add(traducaoJORequest)
     }
 
-//    fun getRegions(palavraOrigem: String, idiomaOrigem: String, idiomaDestino: String) {
-//        // Monta uma String com uma URL a partir das constantes e parâmetros do usuário
-//        val urlSb = StringBuilder(URL_BASE)
-//        with(urlSb) {
-//            append("${END_POINT}/")
-//            append("${idiomaOrigem}/")
-//            append("${palavraOrigem}/")
-//            append("translations=${idiomaDestino}")
-//        }
-//        val url = urlSb.toString()
-//        // Cria uma fila de requisições Volley para enviar a requisição
-//        val filaRequisicaoTraducao: RequestQueue = Volley.newRequestQueue(mainActivity)
-//        // Monta a requisição que será colocada na fila. Esse objeto é uma instância de uma classe anônima
-//        var traducaoJORequest: JsonObjectRequest =
-//                object : JsonObjectRequest(
-//                Request.Method.GET, // Método HTTP de requisição
-//                url, // URL
-//                null, // Objeto de requisição - somente em POST
-//                LanguagesListener(), // Listener para tratar resposta
-//                ErroListener() // Listener para tratar erro
-//            ) {
-//                // Corpo do objeto
-//                // Sobreescrevendo a função para passar cabeçalho na requisição
-//                override fun getHeaders(): MutableMap<String, String> {
-//                    // Cabeçalho composto por Map com app_id, app_key e seus valores
-//                    var parametros: MutableMap<String, String> = mutableMapOf()
-//                    parametros.put(APP_ID_FIELD, APP_ID_VALUE)
-//                    parametros.put(APP_KEY_FIELD, APP_KEY_VALUE)
-//                    return parametros
-//                }
-//            }
-//        // Adiciona a requisição a fila
-//        filaRequisicaoTraducao.add(traducaoJORequest)
-//    }
+    fun getRegions(idiomaOrigem: String) {
+        // Monta uma String com uma URL a partir das constantes e parâmetros do usuário
+        val urlSb = StringBuilder(URL_BASE)
+        with(urlSb) {
+            append("regions/")
+            append("$idiomaOrigem")
+        }
+        val url = urlSb.toString()
+        // Cria uma fila de requisições Volley para enviar a requisição
+        val filaRequisicaoTraducao: RequestQueue = Volley.newRequestQueue(mainActivity)
+        // Monta a requisição que será colocada na fila. Esse objeto é uma instância de uma classe anônima
+        var traducaoJORequest: JsonObjectRequest =
+                object : JsonObjectRequest(
+                Request.Method.GET, // Método HTTP de requisição
+                url, // URL
+                null, // Objeto de requisição - somente em POST
+                    RegionsListener(), // Listener para tratar resposta
+                ErroListener() // Listener para tratar erro
+            ) {
+                // Corpo do objeto
+                // Sobreescrevendo a função para passar cabeçalho na requisição
+                override fun getHeaders(): MutableMap<String, String> {
+                    // Cabeçalho composto por Map com app_id, app_key e seus valores
+                    var parametros: MutableMap<String, String> = mutableMapOf()
+                    parametros.put(APP_ID_FIELD, APP_ID_VALUE)
+                    parametros.put(APP_KEY_FIELD, APP_KEY_VALUE)
+                    return parametros
+                }
+            }
+        // Adiciona a requisição a fila
+        filaRequisicaoTraducao.add(traducaoJORequest)
+    }
 
     /* Trata a resposta de uma requisição quando o acesso ao WS foi realizado. Complexidade de O(N^5).
 Pode causar problemas de desempenho com respostas muito grandes */
@@ -105,7 +103,7 @@ Pode causar problemas de desempenho com respostas muito grandes */
                 var languages: MutableList<String> = mutableListOf()
                 // Parseando o objeto e adicionando as traduções ao StringBuffer, O(N^5)
                 resposta.results?.forEach {
-                    languages.add(it?.source!!) //Language?.id!!)
+                    languages.add(it?.sourceLanguage!!.id!!)
                 }
                 // Enviando as tradução ao Handler da thread de UI para serem mostrados na tela
                 mainActivity.tradutoHandler.obtainMessage(
@@ -118,31 +116,32 @@ Pode causar problemas de desempenho com respostas muito grandes */
         }
     }
 
-    /* Trata a resposta de uma requisição quando o acesso ao WS foi realizado. Usa um Desserializador
-    O(N^2) */
-//    inner class LanguagesListener : Response.Listener<JSONObject> {
-//        override fun onResponse(response: JSONObject?) {
-//            try {
-//                // Usa um builder que usa o desserializador personalizado para criar um objeto Gson
-//                val gsonBuilder: GsonBuilder = GsonBuilder()
-//                // Usa reflexão para extrair o tipo da classe de um List<Translation>
-//                val listTranslationType = object : TypeToken<List<Translation>>() {}.type
-//                // Seta o desserializador personalizado no builder
-//                gsonBuilder.registerTypeAdapter(listTranslationType, TranslationListDeserializer())
-//                /* Usa o builder para criar um Gson e usa o Gson para converter o Json de resposta numa lista de
-//                Translation usando o desserializador personalizado. */
-//                val listTranslation: List<Translation> =
-//                    gsonBuilder.create().fromJson(response.toString(), listTranslationType)
-//                // Extrai somente o texto dos objetos Translation
-//                val listTranslationString: StringBuffer = StringBuffer()
-//                listTranslation.forEach { listTranslationString.append("${it.text}, ") }
-//                mainActivity.tradutoHandler.obtainMessage(RESPOSTA_TRADUCAO,
-//                    listTranslationString.toString().substringBeforeLast(',')).sendToTarget()
-//            } catch (je: JSONException) {
-//                mainActivity.mainLl.snackbar("Erro na conversão JSON")
-//            }
-//        }
-//    }
+    inner class RegionsListener : Response.Listener<JSONObject> {
+        override fun onResponse(response: JSONObject?) {
+            try {
+                // Cria um objeto Gson que consegue fazer reflexão de um Json para Data Class
+                val gson: Gson = Gson()
+                // Reflete a resposta (que é um Json) num objeto da classe Resposta
+                val resposta: RegionsResponse = gson.fromJson(response.toString(), RegionsResponse::class.java)
+                // StringBuffer para armazenar o resultado das traduções
+                var regions = StringBuilder("")
+                // Parseando o objeto e adicionando as traduções ao StringBuffer, O(N^5)
+                resposta.results?.gb?.forEach {
+                    regions.append("$it\n")
+                }
+                resposta.results?.us?.forEach {
+                    regions.append("$it\n")
+                }
+                // Enviando as tradução ao Handler da thread de UI para serem mostrados na tela
+                mainActivity.tradutoHandler.obtainMessage(
+                    RESPOSTA_REGIONS,
+                    regions.toString()
+                ).sendToTarget()
+            } catch (jse: JSONException) {
+                mainActivity.mainLl.snackbar("Erro na conversão JSON")
+            }
+        }
+    }
 
     // Trata erros na requisição ao WS
     inner class ErroListener : Response.ErrorListener {

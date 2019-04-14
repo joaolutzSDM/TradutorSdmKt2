@@ -1,10 +1,17 @@
 package br.edu.ifsp.scl.sdm.tradutorsdmkt.model
 
 data class Resposta(
-    var metadata: Metadata? = Metadata(),var results: List<Result?>? = listOf()
+    var metadata: Metadata? = Metadata(), var results: List<Result?>? = listOf()
 )
 data class LanguagesResponse(
     var metadata: Metadata? = Metadata(), var results: List<Language?>? = listOf()
+)
+data class RegionsResponse(
+    var metadata: Metadata? = Metadata(), var results: Results? = Results()
+)
+data class Results (
+    var gb : List<String?>? = listOf(),
+    var us : List<String?>? = listOf()
 )
 data class Language(
     var region: String? = "",

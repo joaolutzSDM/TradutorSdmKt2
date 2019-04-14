@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.widget.ArrayAdapter
+import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_REGIONS
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_TRADUCAO
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.Language
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.volley.Tradutor
@@ -24,26 +25,22 @@ class MainActivity : AppCompatActivity() {
         tradutor.getLanguages()
 
         // Seta o Listener para o botão
-//        traduzirBt.setOnClickListener {
-//            // Testa se o usuário digitou alguma coisa para traduzir
-//            if (originalEt.text.isNotEmpty()) {
-//                // Instancia um tradutor para fazer a chamada ao WS
-//                val tradutor: Tradutor = Tradutor(this)
-//                // Solicita a tradução com base nos parâmetros selecionados pelo usuário
-//                tradutor.traduzir(originalEt.text.toString(),
-//                    idiomaOrigemSp.selectedItem.toString(),
-//                    idiomaDestinoSp.selectedItem.toString())
-//            }
-//            else {
-//                // Senão, mostra uma mensagem na parte debaixo do LinearLayout
-//                mainLl.snackbar("É preciso digitar uma palavra para ser traduzida")
-//            }
-//        }
+        buscarRegioesBt.setOnClickListener {
+            // Testa se o usuário digitou alguma coisa para traduzir
+            val lang = idiomasSp.selectedItem.toString()
+
+            if(lang.equals("en")) {
+                tradutor.getRegions(lang)
+            } else {
+                mainLl.snackbar("No regions for this source language!")
+            }
+        }
     }
 
     object codigosMensagen {
         // Constante usada para envio de mensagens ao Handler
         val RESPOSTA_TRADUCAO = 0
+        val RESPOSTA_REGIONS = 1
     }
     // Idiomas de origem e destino. Dependem da API do Oxford Dict.
     val idiomas = listOf("pt", "en")
@@ -59,6 +56,9 @@ class MainActivity : AppCompatActivity() {
                 msg.obj as MutableList<String>
             )
             idiomasSp.setSelection(0) //pt
+            buscarRegioesBt.isEnabled = true
+        } else if(msg?.what == RESPOSTA_REGIONS) {
+            regioesTv.text = msg.obj as String
         }
     }
     }
