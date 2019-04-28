@@ -1,14 +1,14 @@
 package br.edu.ifsp.scl.sdm.tradutorsdmkt
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_REGIONS
 import br.edu.ifsp.scl.sdm.tradutorsdmkt.MainActivity.codigosMensagen.RESPOSTA_TRADUCAO
-import br.edu.ifsp.scl.sdm.tradutorsdmkt.model.Language
-import br.edu.ifsp.scl.sdm.tradutorsdmkt.volley.Tradutor
+//import br.edu.ifsp.scl.sdm.tradutorsdmkt.volley.Tradutor
+import br.edu.ifsp.scl.sdm.tradutorsdmkt.retrofit.Tradutor
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.design.snackbar
 

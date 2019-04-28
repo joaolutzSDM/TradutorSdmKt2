@@ -38,6 +38,6 @@ dependencies {
     implementation "org.jetbrains.anko:anko-design:$anko_version" // Snackbars
     implementation "com.android.volley:volley:$volley_version"
     implementation "com.google.code.gson:gson:$gson_version"
-    //implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    //implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 }
